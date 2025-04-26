@@ -33,6 +33,7 @@ import sendForgotPasswordEmail from "../shared/utility/forgot_password_email_sen
 import { VerifyForgotPasswordDto } from "./dto/verify_forgot_password.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { Likes, LikesDocument } from "src/shared/schema/likes";
+import { JwtPayload } from "jsonwebtoken";
 
 @Injectable()
 export class UsersService {
@@ -242,6 +243,39 @@ export class UsersService {
     } catch (error) {
       console.error("User info getting error:", error);
       throw new UnauthorizedException(error.message || "Error in getting user info!");
+    }
+  }
+
+  async getNewAccessToken(@Req() req: Request, @Res() res: Response): Promise<Object>{
+    try {
+      const token = req.cookies.refreshtoken;
+      if (!token) {
+        throw new UnauthorizedException("Token not found!");
+      }
+
+      const decoded = decodeRefreshToken(token) as JwtPayload;
+      if (!decoded) {
+        throw new UnauthorizedException("Token not as required!");
+      }
+
+      const foundUser = await this.userModel.findById(decoded.id);
+
+      if (!foundUser) {
+        throw new BadRequestException("User not found!");
+      }
+
+      const accesstoken = generateAccessToken(foundUser.id, foundUser.type);
+      res.cookie("accesstoken", accesstoken, {
+        httpOnly: true,
+        maxAge: 15 * 60 * 1000,
+      });
+
+      return res.status(200).json(
+        {message: "Access token renewed!"}
+      )
+    } catch (error) {
+      console.error("Access token renewing error: ", error);
+      throw new UnauthorizedException(error.message || "Access token renewing error!");
     }
   }
 }

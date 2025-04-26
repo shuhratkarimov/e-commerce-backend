@@ -7,7 +7,7 @@ import { ForgotPasswordDto } from "./dto/forgot_password.dto";
 import { VerifyForgotPasswordDto } from "./dto/verify_forgot_password.dto";
 import { Request as ExpressRequest, Response } from "express"; 
 import { UpdateUserDto } from "./dto/update-user.dto";
-import { decodeAccessToken } from "src/shared/utility/token-generate";
+import { decodeAccessToken, decodeRefreshToken } from "src/shared/utility/token-generate";
 import { JwtPayload } from "jsonwebtoken";
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
@@ -120,6 +120,17 @@ export class UsersController {
           }
           const decoded = decodeAccessToken(request.cookies.accesstoken) as JwtPayload
       return await this.usersService.getUserInfo(decoded.id);
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  @Post("refresh")
+  @ApiOperation({ summary: 'Refreshes access token' })
+  @ApiResponse({ status: 200, description: 'Uses refresh token and renewes access token' })
+  async getNewAccessToken(@Req() request: ExpressRequest, @Res() res: Response): Promise<Object> {
+    try {
+      return await this.usersService.getNewAccessToken(request, res);
     } catch (error) {
       throw new Error(error);
     }
