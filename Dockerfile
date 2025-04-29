@@ -1,15 +1,16 @@
 FROM node:20
 
+# Set working directory
 WORKDIR /app
 
+# Copy package.json and install dependencies
 COPY package*.json ./
+RUN npm install
 
-RUN npm ci
-
+# Copy all files and build the application
 COPY . .
+RUN npm run build
 
-RUN npm install redis
-
+# Expose port and run the application
 EXPOSE 3000
-
-CMD ["npm", "run", "start:prod"]
+CMD ["node", "dist/main"]
