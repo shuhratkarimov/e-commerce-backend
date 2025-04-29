@@ -1,7 +1,7 @@
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
-import * as cookieParser from "cookie-parser";
-import * as cors from "cors";
+import cors from "cors";
+import cookieParser from "cookie-parser";
 import { AllExceptionFilter } from "./filter/all-exception.filter";
 import { join } from "path";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
