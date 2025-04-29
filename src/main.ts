@@ -15,7 +15,7 @@ async function bootstrap() {
 
   app.use(
     cors({
-      origin: "http://localhost:5173",
+      origin: "http://109.205.179.248:5173",  // Frontend IP manzilingizni kiriting
       credentials: true,
     }),
   );
