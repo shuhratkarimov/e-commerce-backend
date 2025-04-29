@@ -1,4 +1,5 @@
 name: Full CI/CD Pipeline
+
 on:
   push:
     branches:
@@ -11,6 +12,23 @@ jobs:
     steps:
       - name: Kodni olish (Checkout)
         uses: actions/checkout@v4
+
+      - name: .env faylni yaratish
+        run: |
+          echo "PORT=${{ secrets.PORT }}" >> .env
+          echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> .env
+          echo "ACCESS_SECRET_KEY=${{ secrets.ACCESS_SECRET_KEY }}" >> .env
+          echo "ACCESS_EXPIRING_TIME=${{ secrets.ACCESS_EXPIRING_TIME }}" >> .env
+          echo "REFRESH_SECRET_KEY=${{ secrets.REFRESH_SECRET_KEY }}" >> .env
+          echo "REFRESH_EXPIRING_TIME=${{ secrets.REFRESH_EXPIRING_TIME }}" >> .env
+          echo "VERIFIER_EMAIL=${{ secrets.VERIFIER_EMAIL }}" >> .env
+          echo "VERIFIER_GOOGLE_PASS_KEY=${{ secrets.VERIFIER_GOOGLE_PASS_KEY }}" >> .env
+          echo "REDIS_PASS=${{ secrets.REDIS_PASS }}" >> .env
+          echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> .env
+          echo "REDIS_SOCKET_PORT=${{ secrets.REDIS_SOCKET_PORT }}" >> .env
+          echo "REDIS_USERNAME=${{ secrets.REDIS_USERNAME }}" >> .env
+          echo "MY_USERNAME=${{ secrets.MY_USERNAME }}" >> .env
+          echo "MY_PASSWORD=${{ secrets.MY_PASSWORD }}" >> .env
 
       - name: QEMU o‘rnatish
         uses: docker/setup-qemu-action@v3
@@ -40,4 +58,4 @@ jobs:
         run: docker pull ${{ vars.DOCKERHUB_USERNAME }}/my-app:latest
 
       - name: Yangi konteynerni ishga tushirish
-        run: docker run -d --name my-app -p 3000:3000 ${{ vars.DOCKERHUB_USERNAME }}/my-app:latest
+        run: docker run -d --name my-app --env-file .env -p 3000:3000 ${{ vars.DOCKERHUB_USERNAME }}/my-app:latest
