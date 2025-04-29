@@ -15,9 +15,9 @@ async function bootstrap() {
 
   app.use(
     cors({
-      origin: "http://109.205.179.248:5173",  // Frontend IP manzilingizni kiriting
+      origin: "http://109.205.179.248:5173", // Frontend IP manzilingizni kiriting
       credentials: true,
-    }),
+    })
   );
   app.use(cookieParser());
 
@@ -30,7 +30,7 @@ async function bootstrap() {
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
-    }),
+    })
   );
 
   const config = new DocumentBuilder()
@@ -50,6 +50,7 @@ async function bootstrap() {
   try {
     await app.listen(PORT, () => {
       console.log(`Server is running on the port: ${PORT}`);
+      console.log("CI/CD ishladi!");
     });
   } catch (error) {
     console.error(`Server failed to start: ${error.message}`);
