@@ -10,7 +10,10 @@ export class VerifyDto {
   @IsString()
   email: string;
 
-  @ApiProperty({ example: 572934, description: "Verification code of the user from email" })
+  @ApiProperty({
+    example: 572934,
+    description: "Verification code of the user from email",
+  })
   @IsNotEmpty()
   @IsNumber()
   verificationCode: number;

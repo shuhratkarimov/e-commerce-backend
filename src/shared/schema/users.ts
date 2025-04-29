@@ -8,7 +8,7 @@ export enum userTypes {
   ADMIN = "admin",
   TEACHER = "teacher",
   STUDENT = "student",
-  USER = "user"
+  USER = "user",
 }
 
 @Schema({ timestamps: true, versionKey: false })
@@ -29,29 +29,29 @@ export class Users extends Document {
       userTypes.ADMIN,
       userTypes.TEACHER,
       userTypes.STUDENT,
-      userTypes.USER
+      userTypes.USER,
     ],
     default: "user",
   })
   type: string;
 
-  @Prop({default: false})
-  isVerified: boolean
+  @Prop({ default: false })
+  isVerified: boolean;
 
-  @Prop({default: null})
-  otp: number
+  @Prop({ default: null })
+  otp: number;
 
-  @Prop({default: null})
-  otpExpiryTime: Date
+  @Prop({ default: null })
+  otpExpiryTime: Date;
 
-  @Prop({default: 0})
-  attempts: number
+  @Prop({ default: 0 })
+  attempts: number;
 
-  @Prop({default: null})
-  allowedTime: Date
+  @Prop({ default: null })
+  allowedTime: Date;
 
-  @Prop({default: null})
-  image: String
+  @Prop({ default: null })
+  image: string;
 }
 
-export const UserSchema = SchemaFactory.createForClass(Users)
+export const UserSchema = SchemaFactory.createForClass(Users);

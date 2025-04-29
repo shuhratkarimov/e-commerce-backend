@@ -45,8 +45,11 @@ export class ProductController {
   }
 
   @ApiOperation({ summary: "Search products" })
-  @ApiResponse({ status: 200, description: "List of products matching search criteria" })
-  @Get('search')
+  @ApiResponse({
+    status: 200,
+    description: "List of products matching search criteria",
+  })
+  @Get("search")
   async searchProducts(@Query() query: any) {
     return this.productService.search(query);
   }
@@ -56,10 +59,7 @@ export class ProductController {
   @ApiResponse({ status: 404, description: "Product not found" })
   @UseGuards(AuthGuard)
   @Put("update_product/:id")
-  async update(
-    @Param("id") id: string,
-    @Body() updateData: UpdateProductDto
-  ) {
+  async update(@Param("id") id: string, @Body() updateData: UpdateProductDto) {
     return this.productService.update(id, updateData);
   }
 

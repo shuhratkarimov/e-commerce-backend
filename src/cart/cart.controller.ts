@@ -26,10 +26,12 @@ export class CartController {
   @ApiResponse({ status: 400, description: "Bad request" })
   @Post("add_to_cart")
   create(@Request() request, @Body() createcartDto: CreateCartDto) {
-        if (!request.cookies?.accesstoken) {
-          throw new UnauthorizedException("Token not found!");
-        }
-        const decoded = decodeAccessToken(request.cookies.accesstoken) as JwtPayload        
+    if (!request.cookies?.accesstoken) {
+      throw new UnauthorizedException("Token not found!");
+    }
+    const decoded = decodeAccessToken(
+      request.cookies.accesstoken,
+    ) as JwtPayload;
     return this.cartService.create(decoded.id, createcartDto.products);
   }
 
@@ -41,7 +43,9 @@ export class CartController {
     if (!request.cookies?.accesstoken) {
       throw new UnauthorizedException("Token not found!");
     }
-    const decoded = decodeAccessToken(request.cookies.accesstoken) as JwtPayload
+    const decoded = decodeAccessToken(
+      request.cookies.accesstoken,
+    ) as JwtPayload;
     return this.cartService.findAll(decoded.id);
   }
 
@@ -52,9 +56,13 @@ export class CartController {
   @ApiResponse({ status: 404, description: "Cart not found" })
   async updateCartProducts(
     @Param("id") cartId: string,
-    @Body() updateCartDto: UpdateCartProductsDto
+    @Body() updateCartDto: UpdateCartProductsDto,
   ) {
-    return this.cartService.updateCartProducts(cartId, updateCartDto.addProducts, updateCartDto.removeProducts);
+    return this.cartService.updateCartProducts(
+      cartId,
+      updateCartDto.addProducts,
+      updateCartDto.removeProducts,
+    );
   }
 
   @ApiOperation({ summary: "Delete a cart" })

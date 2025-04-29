@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Types } from "mongoose";
 
-export type CartDocument = Cart & Document
+export type CartDocument = Cart & Document;
 
 @Schema({ timestamps: true, versionKey: false })
 export class Cart extends Document {
@@ -12,4 +12,4 @@ export class Cart extends Document {
   products: Types.ObjectId[];
 }
 
-export const CartSchema = SchemaFactory.createForClass(Cart)
+export const CartSchema = SchemaFactory.createForClass(Cart);

@@ -1,6 +1,10 @@
-import * as nodemailer from "nodemailer"
+import * as nodemailer from "nodemailer";
 
-async function sendVerificationEmail(username: string, email: string, randomCode: number) {
+async function sendVerificationEmail(
+  username: string,
+  email: string,
+  randomCode: number,
+) {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -58,7 +62,7 @@ async function sendVerificationEmail(username: string, email: string, randomCode
           ${randomCode}
         </div>
         <p style="font-size: 14px; color: #666; margin-top: 20px;">
-          Ushbu kod 2 daqiqa ichida amal qiladi. Kodni kiritishda muammo
+          Ushbu kod 3 daqiqa ichida amal qiladi. Kodni kiritishda muammo
           yuzaga kelsa, iltimos biz bilan bog'laning (${process.env.VERIFIER_EMAIL}).
         </p>
       </div>
@@ -81,4 +85,4 @@ async function sendVerificationEmail(username: string, email: string, randomCode
   });
 }
 
-export default sendVerificationEmail
+export default sendVerificationEmail;

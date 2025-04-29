@@ -15,7 +15,7 @@ import { Product, ProductDocument } from "src/shared/schema/products";
 export class CategoryService {
   constructor(
     @InjectModel(Category.name) private categoryModel: Model<CategoryDocument>,
-    @InjectModel(Product.name) private productModel: Model<ProductDocument>
+    @InjectModel(Product.name) private productModel: Model<ProductDocument>,
   ) {}
 
   async create(createCategoryDto: CreateCategoryDto): Promise<object> {
@@ -35,33 +35,32 @@ export class CategoryService {
     }
   }
 
-  async findAll(): Promise<Category[]> {
+  async findAll(): Promise<object> {
     const categories = await this.categoryModel.find();
     if (!categories.length) {
       throw new HttpException("No categories found!", HttpStatus.NOT_FOUND);
     }
-    return categories;
+    return { message: categories };
   }
 
-  async findOne(id: string): Promise<Object> {
+  async findOne(id: string): Promise<object> {
     const category = await this.categoryModel.findById(id);
     if (!category) {
       throw new HttpException("Category not found!", HttpStatus.NOT_FOUND);
     }
-    const categoryProducts = await this.productModel.find({type: category.title})
-    return {category: category, categoryProducts: categoryProducts};
+    const categoryProducts = await this.productModel.find({
+      type: category.title,
+    });
+    return { category: category, categoryProducts: categoryProducts };
   }
 
-  async update(
-    id: string,
-    updateData: UpdateCategoryDto
-  ): Promise<object> {
+  async update(id: string, updateData: UpdateCategoryDto): Promise<object> {
     const updatedCategory = await this.categoryModel.findByIdAndUpdate(
       id,
       updateData,
       {
         new: true,
-      }
+      },
     );
     if (!updatedCategory) {
       throw new HttpException("Category not found!", HttpStatus.NOT_FOUND);

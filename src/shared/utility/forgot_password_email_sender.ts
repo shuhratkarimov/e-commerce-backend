@@ -1,6 +1,10 @@
-import * as nodemailer from "nodemailer"
+import * as nodemailer from "nodemailer";
 
-async function sendForgotPasswordEmail(username: string, email: string, randomCode: number) {
+async function sendForgotPasswordEmail(
+  username: string,
+  email: string,
+  randomCode: number,
+) {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -81,4 +85,4 @@ async function sendForgotPasswordEmail(username: string, email: string, randomCo
   });
 }
 
-export default sendForgotPasswordEmail
+export default sendForgotPasswordEmail;

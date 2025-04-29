@@ -18,7 +18,7 @@ export class ClickController {
   @Get("pay")
   createPaymentLink(
     @Query("orderId") orderId: string,
-    @Query("amount") amount: string
+    @Query("amount") amount: string,
   ) {
     const url = this.clickService.generatePaymentUrl(orderId, +amount);
     return { url };

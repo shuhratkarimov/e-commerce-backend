@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, IsNegative, IsNumber, IsString } from "class-validator";
 
-export class VerifyForgotPasswordDto  {
+export class VerifyForgotPasswordDto {
   @ApiProperty({
     example: "shuhratkarimov.dev@gmail.com",
     description: "Email of the user",

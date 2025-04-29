@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Types } from "mongoose";
 
-export type LikesDocument = Likes & Document
+export type LikesDocument = Likes & Document;
 
 @Schema({ timestamps: true, versionKey: false })
 export class Likes extends Document {
@@ -12,4 +12,4 @@ export class Likes extends Document {
   product: Types.ObjectId;
 }
 
-export const LikesSchema = SchemaFactory.createForClass(Likes)
+export const LikesSchema = SchemaFactory.createForClass(Likes);

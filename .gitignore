@@ -11,7 +11,7 @@ yarn-error.log*
 lerna-debug.log*
 
 .DS_Store
-
+uploads/
 /coverage
 /.nyc_output
 

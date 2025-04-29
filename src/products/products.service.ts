@@ -15,7 +15,7 @@ import { Category, CategoryDocument } from "src/shared/schema/category";
 export class ProductService {
   constructor(
     @InjectModel(Product.name) private productModel: Model<ProductDocument>,
-    @InjectModel(Category.name) private categoryModel: Model<CategoryDocument>
+    @InjectModel(Category.name) private categoryModel: Model<CategoryDocument>,
   ) {}
 
   async create(createProductDto: CreateProductDto): Promise<object> {
@@ -26,7 +26,7 @@ export class ProductService {
       if (!foundCategory) {
         throw new HttpException(
           `Category ${createProductDto.type} not found! \nPlease, create this category before adding this product!`,
-          HttpStatus.BAD_REQUEST
+          HttpStatus.BAD_REQUEST,
         );
       }
       const newProduct = await this.productModel.create(createProductDto);
@@ -36,16 +36,17 @@ export class ProductService {
     }
   }
 
-  async search(query: any): Promise<Object> {
+  async search(query: any): Promise<object> {
     const plainQuery = { ...query };
     const filters: any = {};
 
     if (plainQuery.brand) {
-      filters.brand = { $regex: plainQuery.brand, $options: 'i' };
-    }   
+      const brands = plainQuery.brand.split(",");
+      filters.brand = { $in: brands.map((b: string) => new RegExp(b, "i")) };
+    }
 
     if (plainQuery.name) {
-      filters.name = { $regex: plainQuery.name, $options: 'i' };
+      filters.name = { $regex: plainQuery.name, $options: "i" };
     }
 
     if (plainQuery.minPrice || plainQuery.maxPrice) {
@@ -56,18 +57,25 @@ export class ProductService {
 
     if (plainQuery.minBattery || plainQuery.maxBattery) {
       filters.batteryCapacity = {};
-      if (plainQuery.minBattery) filters.batteryCapacity.$gte = Number(plainQuery.minBattery);
-      if (plainQuery.maxBattery) filters.batteryCapacity.$lte = Number(plainQuery.maxBattery);
+      if (plainQuery.minBattery)
+        filters.batteryCapacity.$gte = Number(plainQuery.minBattery);
+      if (plainQuery.maxBattery)
+        filters.batteryCapacity.$lte = Number(plainQuery.maxBattery);
     }
 
     if (plainQuery.screenType) {
-      filters.screenType = { $regex: plainQuery.screenType, $options: 'i' };
+      const screenTypes = plainQuery.screenType.split(",");
+      filters.screenType = {
+        $in: screenTypes.map((st: string) => new RegExp(st, "i")),
+      };
     }
 
     if (plainQuery.minScreen || plainQuery.maxScreen) {
       filters.screenSize = {};
-      if (plainQuery.minScreen) filters.screenSize.$gte = Number(plainQuery.minScreen);
-      if (plainQuery.maxScreen) filters.screenSize.$lte = Number(plainQuery.maxScreen);
+      if (plainQuery.minScreen)
+        filters.screenSize.$gte = Number(plainQuery.minScreen);
+      if (plainQuery.maxScreen)
+        filters.screenSize.$lte = Number(plainQuery.maxScreen);
     }
 
     if (plainQuery.protectionClass) {
@@ -78,11 +86,13 @@ export class ProductService {
       filters.rom = {};
       if (plainQuery.minRom) filters.rom.$gte = Number(plainQuery.minRom);
       if (plainQuery.maxRom) filters.rom.$lte = Number(plainQuery.maxRom);
-    }   
+    }
+
     const [products, count] = await Promise.all([
       this.productModel.find(filters).exec(),
-      this.productModel.countDocuments(filters).exec()
+      this.productModel.countDocuments(filters).exec(),
     ]);
+
     return { count, products };
   }
 
@@ -108,7 +118,7 @@ export class ProductService {
       updateData,
       {
         new: true,
-      }
+      },
     );
     if (!updatedProduct) {
       throw new HttpException("Product not found!", HttpStatus.NOT_FOUND);

@@ -41,10 +41,20 @@ describe("LikeService", () => {
 
       const result = await service.create("user123", "product123");
 
-      expect(likeModel.findOne).toHaveBeenCalledWith({ user: "user123", product: "product123" });
+      expect(likeModel.findOne).toHaveBeenCalledWith({
+        user: "user123",
+        product: "product123",
+      });
       expect(likeModel.findOneAndDelete).toHaveBeenCalled();
-      expect(productModel.findByIdAndUpdate).toHaveBeenCalledWith("product123", { $inc: { likes: -1 } }, { new: true });
-      expect(result).toEqual({ message: "Like deleted!", updatedProduct: { likes: 3 } });
+      expect(productModel.findByIdAndUpdate).toHaveBeenCalledWith(
+        "product123",
+        { $inc: { likes: -1 } },
+        { new: true, select: "likes" },
+      );
+      expect(result).toEqual({
+        message: "Like deleted!",
+        updatedProduct: { likes: 3 },
+      });
     });
 
     it("should create like if not exists", async () => {
@@ -54,8 +64,15 @@ describe("LikeService", () => {
 
       const result = await service.create("user123", "product123");
 
-      expect(likeModel.create).toHaveBeenCalledWith({ user: "user123", product: "product123" });
-      expect(productModel.findByIdAndUpdate).toHaveBeenCalledWith("product123", { $inc: { likes: 1 } }, { new: true });
+      expect(likeModel.create).toHaveBeenCalledWith({
+        user: "user123",
+        product: "product123",
+      });
+      expect(productModel.findByIdAndUpdate).toHaveBeenCalledWith(
+        "product123",
+        { $inc: { likes: 1 } },
+        { new: true },
+      );
       expect(result).toEqual({
         message: "Like created!",
         like: { _id: "newLike" },
@@ -68,7 +85,9 @@ describe("LikeService", () => {
       likeModel.create.mockResolvedValue({ _id: "newLike" });
       productModel.findByIdAndUpdate.mockResolvedValue(null);
 
-      await expect(service.create("user123", "product123")).rejects.toThrow(NotFoundException);
+      await expect(service.create("user123", "product123")).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -86,7 +105,9 @@ describe("LikeService", () => {
     it("should throw exception if no likes found", async () => {
       likeModel.find.mockResolvedValue([]);
 
-      await expect(service.findAllLikesByUserId("user123")).rejects.toThrow(HttpException);
+      await expect(service.findAllLikesByUserId("user123")).rejects.toThrow(
+        HttpException,
+      );
     });
   });
 });

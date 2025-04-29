@@ -8,7 +8,7 @@ import {
   Post,
   Req,
   Res,
-  UnauthorizedException
+  UnauthorizedException,
 } from "@nestjs/common";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { InjectModel } from "@nestjs/mongoose";
@@ -16,7 +16,7 @@ import { UserDocument, Users } from "../shared/schema/users";
 import { Model } from "mongoose";
 import {
   comparePassword,
-  generateHashPassword
+  generateHashPassword,
 } from "../shared/utility/password-manager";
 import sendVerificationEmail from "src/shared/utility/email-service";
 import { LoginDto } from "./dto/login-dto";
@@ -25,7 +25,7 @@ import { ResponseMessage } from "./users.controller";
 import {
   decodeRefreshToken,
   generateAccessToken,
-  generateRefreshToken
+  generateRefreshToken,
 } from "../shared/utility/token-generate";
 import { Request, Response } from "express";
 import { ForgotPasswordDto } from "./dto/forgot_password.dto";
@@ -39,26 +39,35 @@ import { JwtPayload } from "jsonwebtoken";
 export class UsersService {
   constructor(
     @InjectModel(Users.name) private readonly userModel: Model<UserDocument>,
-    @InjectModel(Likes.name) private readonly likeModel: Model<LikesDocument>
+    @InjectModel(Likes.name) private readonly likeModel: Model<LikesDocument>,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
     try {
-      createUserDto.password = await generateHashPassword(createUserDto.password);
+      createUserDto.password = await generateHashPassword(
+        createUserDto.password,
+      );
       const user = await this.userModel.findOne({ email: createUserDto.email });
 
       if (user) {
         throw new UnauthorizedException("User already exists!");
       }
 
-      const otp = +Array.from({ length: 6 }, () => Math.floor(Math.random() * 10)).join("");
+      let otp: any;
+      do {
+        otp = Array.from({ length: 6 }, () =>
+          Math.floor(Math.random() * 10),
+        ).join("");
+      } while (otp.length !== 6);
+
+      otp = +otp;
       const otpExpiryTime = new Date();
       otpExpiryTime.setMinutes(otpExpiryTime.getMinutes() + 3);
 
       await this.userModel.create({
         ...createUserDto,
         otp,
-        otpExpiryTime
+        otpExpiryTime,
       });
 
       sendVerificationEmail(createUserDto.username, createUserDto.email, otp);
@@ -66,7 +75,7 @@ export class UsersService {
       return {
         success: true,
         message: "Successfully registered!",
-        result: `Verification code sent to your email: ${createUserDto.email}`
+        result: `Verification code sent to your email: ${createUserDto.email}`,
       };
     } catch (error) {
       console.error("Create user error:", error);
@@ -89,15 +98,60 @@ export class UsersService {
       ) {
         await this.userModel.updateOne(
           { _id: foundUser._id },
-          { isVerified: true, otp: 0 }
+          { isVerified: true, otp: 0 },
         );
         return { message: "You successfully verified!" };
       } else {
-        throw new BadRequestException("Verification code is invalid or expired!");
+        throw new BadRequestException(
+          "Verification code is invalid or expired!",
+        );
       }
     } catch (error) {
       console.error("Verify error:", error);
       throw new BadRequestException(error.message || "Error on verifying!");
+    }
+  }
+
+  async resendVerificationCode(
+    resendVerificationCode: ForgotPasswordDto,
+  ): Promise<object> {
+    try {
+      const user: any = await this.userModel.findOne({
+        email: resendVerificationCode.email,
+      });
+
+      if (!user) {
+        throw new UnauthorizedException("User not found!");
+      }
+
+      if (user.isVerified) {
+        throw new UnauthorizedException("Your email already verified!");
+      }
+
+      let otp: any;
+      do {
+        otp = Array.from({ length: 6 }, () =>
+          Math.floor(Math.random() * 10),
+        ).join("");
+      } while (otp.length !== 6);
+
+      otp = +otp;
+      const otpExpiryTime = new Date();
+      otpExpiryTime.setMinutes(otpExpiryTime.getMinutes() + 3);
+
+      sendVerificationEmail(user.username, user.email, otp);
+
+      user.otp = otp;
+      user.otpExpiryTime = otpExpiryTime;
+      await user.save();
+
+      return {
+        success: true,
+        result: `Verification code sent to your email: ${user.email}`,
+      };
+    } catch (error) {
+      console.error("Create user error:", error);
+      throw new BadRequestException(error || "Error in registering!");
     }
   }
 
@@ -127,18 +181,29 @@ export class UsersService {
           httpOnly: true,
           maxAge: 7 * 24 * 60 * 60 * 1000,
         });
-        return res.json({ message: "You successfully logged in!" });
+        console.log(refreshtoken);
+
+        return res.json({
+          message: "You successfully logged in!",
+          accesstoken: accesstoken,
+          refreshtoken: refreshtoken,
+        });
       } else {
         return res.json({ message: "Your email did not verified yet!" });
       }
     } catch (error) {
       console.error("Login error:", error);
-      throw new HttpException(error.message || "Server error", HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        error.message || "Server error",
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   @Post("forgot_password")
-  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto): Promise<ResponseMessage> {
+  async forgotPassword(
+    @Body() forgotPasswordDto: ForgotPasswordDto,
+  ): Promise<ResponseMessage> {
     try {
       const { email } = forgotPasswordDto;
       const foundUser = await this.userModel.findOne({ email });
@@ -151,7 +216,9 @@ export class UsersService {
         throw new BadRequestException("Your email is not verified!");
       }
 
-      const randomCode = +Array.from({ length: 7 }, () => Math.floor(Math.random() * 10)).join("");
+      const randomCode = +Array.from({ length: 7 }, () =>
+        Math.floor(Math.random() * 10),
+      ).join("");
       await sendForgotPasswordEmail(foundUser.username, email, randomCode);
 
       foundUser.otpExpiryTime = new Date(Date.now() + 3 * 60 * 1000);
@@ -159,14 +226,20 @@ export class UsersService {
       foundUser.attempts = 0;
       await foundUser.save();
 
-      return { message: `A code was sent to recover password to ${email} email!` };
+      return {
+        message: `A code was sent to recover password to ${email} email!`,
+      };
     } catch (error) {
       console.error("Forgot password error:", error);
-      throw new BadRequestException(error.message || "Error in refreshing password!");
+      throw new BadRequestException(
+        error.message || "Error in refreshing password!",
+      );
     }
   }
 
-  async verifyForgotPassword(@Body() data: VerifyForgotPasswordDto): Promise<ResponseMessage> {
+  async verifyForgotPassword(
+    @Body() data: VerifyForgotPasswordDto,
+  ): Promise<ResponseMessage> {
     try {
       const { email, code, newPassword } = data;
       const foundUser = await this.userModel.findOne({ email });
@@ -182,7 +255,7 @@ export class UsersService {
         const encodedPassword = await generateHashPassword(newPassword);
         await this.userModel.updateOne(
           { email },
-          { otp: null, password: encodedPassword }
+          { otp: null, password: encodedPassword },
         );
         return { message: "Otp verified and password renewed!" };
       } else {
@@ -191,7 +264,9 @@ export class UsersService {
           foundUser.otpExpiryTime = new Date(Date.now() + 15 * 60 * 1000);
           foundUser.attempts = 0;
           await foundUser.save();
-          throw new BadRequestException("You did so many wrong attempts! Please try again later...");
+          throw new BadRequestException(
+            "You did so many wrong attempts! Please try again later...",
+          );
         } else {
           await foundUser.save();
           throw new BadRequestException("Code is wrong or time is expired!");
@@ -199,7 +274,9 @@ export class UsersService {
       }
     } catch (error) {
       console.error("Verify forgot password error:", error);
-      throw new BadRequestException(error.message || "Error in verifying forgot password code");
+      throw new BadRequestException(
+        error.message || "Error in verifying forgot password code",
+      );
     }
   }
 
@@ -225,28 +302,42 @@ export class UsersService {
     }
   }
 
-  async updateUser(user: string, updateUserDto: UpdateUserDto): Promise<Object>{
+  async updateUser(
+    user: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<object> {
     try {
-      await this.userModel.findByIdAndUpdate(user, updateUserDto)
-      const updatedUser = await this.userModel.findById(user).select(["username", "email", "image"])
-      return {message: "User profile updated!", updatedUser: updatedUser}
+      await this.userModel.findByIdAndUpdate(user, updateUserDto);
+      const updatedUser = await this.userModel
+        .findById(user)
+        .select(["username", "email", "image"]);
+      return { message: "User profile updated!", updatedUser: updatedUser };
     } catch (error) {
       console.error("UpdateProfile error:", error);
-      throw new UnauthorizedException(error.message || "Error in updating profile!");
+      throw new UnauthorizedException(
+        error.message || "Error in updating profile!",
+      );
     }
   }
 
-  async getUserInfo(user: string): Promise<Object>{
+  async getUserInfo(user: string): Promise<object> {
     try {
-      const userData = await this.userModel.findById(user).select(["username", "email", "image"])
-      return {userData: userData}
+      const userData = await this.userModel
+        .findById(user)
+        .select(["username", "email", "image"]);
+      return { userData: userData };
     } catch (error) {
       console.error("User info getting error:", error);
-      throw new UnauthorizedException(error.message || "Error in getting user info!");
+      throw new UnauthorizedException(
+        error.message || "Error in getting user info!",
+      );
     }
   }
 
-  async getNewAccessToken(@Req() req: Request, @Res() res: Response): Promise<Object>{
+  async getNewAccessToken(
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<object> {
     try {
       const token = req.cookies.refreshtoken;
       if (!token) {
@@ -270,12 +361,12 @@ export class UsersService {
         maxAge: 15 * 60 * 1000,
       });
 
-      return res.status(200).json(
-        {message: "Access token renewed!"}
-      )
+      return res.status(200).json({ message: "Access token renewed!" });
     } catch (error) {
       console.error("Access token renewing error: ", error);
-      throw new UnauthorizedException(error.message || "Access token renewing error!");
+      throw new UnauthorizedException(
+        error.message || "Access token renewing error!",
+      );
     }
   }
 }

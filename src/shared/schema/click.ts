@@ -1,7 +1,7 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document } from "mongoose";
 
-export type ClickPaymentDocument = ClickPayment & Document
+export type ClickPaymentDocument = ClickPayment & Document;
 
 @Schema()
 export class ClickPayment extends Document {

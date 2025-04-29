@@ -13,7 +13,7 @@ export class RedisService {
         port: parseInt(process.env.REDIS_SOCKET_PORT as string),
       },
     });
-    this.client.on("error", (err:any) => {
+    this.client.on("error", (err: any) => {
       console.log("Redis error: " + err);
     });
     this.client.connect();

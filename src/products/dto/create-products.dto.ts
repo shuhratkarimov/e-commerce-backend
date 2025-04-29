@@ -9,25 +9,25 @@ import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateProductDto {
   @ApiProperty({
-    description: 'Name of the product',
+    description: "Name of the product",
     type: String,
-    example: 'iPhone 13',
+    example: "iPhone 13",
   })
   @IsNotEmpty()
   @IsString()
   name: string;
 
   @ApiProperty({
-    description: 'Brand of the product',
+    description: "Brand of the product",
     type: String,
-    example: 'Apple',
+    example: "Apple",
   })
   @IsNotEmpty()
   @IsString()
   brand: string;
 
   @ApiProperty({
-    description: 'Price of the product',
+    description: "Price of the product",
     type: Number,
     example: 999,
   })
@@ -36,9 +36,9 @@ export class CreateProductDto {
   price: number;
 
   @ApiProperty({
-    description: 'Colors available for the product',
+    description: "Colors available for the product",
     type: [String],
-    example: ['Red', 'Blue', 'Black'],
+    example: ["Red", "Blue", "Black"],
     required: false,
   })
   @IsOptional()
@@ -47,7 +47,7 @@ export class CreateProductDto {
   colors?: string[];
 
   @ApiProperty({
-    description: 'Amount of ROM (storage) of the product',
+    description: "Amount of ROM (storage) of the product",
     type: Number,
     example: 128,
     required: false,
@@ -57,7 +57,7 @@ export class CreateProductDto {
   rom?: number;
 
   @ApiProperty({
-    description: 'Screen size of the product',
+    description: "Screen size of the product",
     type: Number,
     example: 6.1,
     required: false,
@@ -67,9 +67,9 @@ export class CreateProductDto {
   screenSize?: number;
 
   @ApiProperty({
-    description: 'CPU model of the product',
+    description: "CPU model of the product",
     type: String,
-    example: 'A15 Bionic',
+    example: "A15 Bionic",
     required: false,
   })
   @IsOptional()
@@ -77,7 +77,7 @@ export class CreateProductDto {
   cpu?: string;
 
   @ApiProperty({
-    description: 'Number of CPU cores of the product',
+    description: "Number of CPU cores of the product",
     type: Number,
     example: 6,
     required: false,
@@ -87,9 +87,9 @@ export class CreateProductDto {
   cores?: number;
 
   @ApiProperty({
-    description: 'Main camera resolution (in MP) of the product',
+    description: "Main camera resolution (in MP) of the product",
     type: String,
-    example: '12MP Dual Camera',
+    example: "12MP Dual Camera",
     required: false,
   })
   @IsOptional()
@@ -97,7 +97,7 @@ export class CreateProductDto {
   mainCamera?: string;
 
   @ApiProperty({
-    description: 'Front camera resolution (in MP) of the product',
+    description: "Front camera resolution (in MP) of the product",
     type: Number,
     example: 12,
     required: false,
@@ -107,7 +107,7 @@ export class CreateProductDto {
   frontCamera?: number;
 
   @ApiProperty({
-    description: 'Battery capacity of the product (in mAh)',
+    description: "Battery capacity of the product (in mAh)",
     type: Number,
     example: 2815,
     required: false,
@@ -117,16 +117,16 @@ export class CreateProductDto {
   batteryCapacity?: number;
 
   @ApiProperty({
-    description: 'Detailed description of the product',
+    description: "Detailed description of the product",
     type: String,
-    example: 'Latest Apple iPhone with improved performance and camera',
+    example: "Latest Apple iPhone with improved performance and camera",
   })
   @IsNotEmpty()
   @IsString()
   description: string;
 
   @ApiProperty({
-    description: 'Free delivery option (if applicable)',
+    description: "Free delivery option (if applicable)",
     type: Number,
     example: 1, // 1 = free delivery, 0 = no free delivery
     required: false,
@@ -136,7 +136,7 @@ export class CreateProductDto {
   freeDelivery?: number;
 
   @ApiProperty({
-    description: 'Number of products in stock',
+    description: "Number of products in stock",
     type: Number,
     example: 100,
   })
@@ -145,7 +145,7 @@ export class CreateProductDto {
   inStock: number;
 
   @ApiProperty({
-    description: 'Warranty duration (in months)',
+    description: "Warranty duration (in months)",
     type: Number,
     example: 12,
     required: false,
@@ -155,9 +155,9 @@ export class CreateProductDto {
   guaranteed?: number;
 
   @ApiProperty({
-    description: 'Additional details about the product',
+    description: "Additional details about the product",
     type: String,
-    example: 'Includes charger and accessories',
+    example: "Includes charger and accessories",
     required: false,
   })
   @IsOptional()
@@ -165,7 +165,7 @@ export class CreateProductDto {
   details?: string;
 
   @ApiProperty({
-    description: 'Screen resolution of the product (width and height)',
+    description: "Screen resolution of the product (width and height)",
     type: [Number],
     example: [1170, 2532],
     required: false,
@@ -176,7 +176,7 @@ export class CreateProductDto {
   screenResolution?: number[];
 
   @ApiProperty({
-    description: 'Screen refresh rate (Hz) of the product',
+    description: "Screen refresh rate (Hz) of the product",
     type: Number,
     example: 60,
     required: false,
@@ -186,7 +186,7 @@ export class CreateProductDto {
   screenRefreshRate?: number;
 
   @ApiProperty({
-    description: 'Pixel density (PPI) of the product',
+    description: "Pixel density (PPI) of the product",
     type: Number,
     example: 460,
     required: false,
@@ -196,9 +196,9 @@ export class CreateProductDto {
   pixelDensity?: number;
 
   @ApiProperty({
-    description: 'Screen type of the product',
+    description: "Screen type of the product",
     type: String,
-    example: 'OLED',
+    example: "OLED",
     required: false,
   })
   @IsOptional()
@@ -206,7 +206,7 @@ export class CreateProductDto {
   screenType?: string;
 
   @ApiProperty({
-    description: 'Protection class of the product (IP rating)',
+    description: "Protection class of the product (IP rating)",
     type: Number,
     example: 68,
     required: false,
@@ -216,9 +216,9 @@ export class CreateProductDto {
   protectionClass?: number;
 
   @ApiProperty({
-    description: 'Additional features or accessories for the product',
+    description: "Additional features or accessories for the product",
     type: String,
-    example: 'Includes wireless charger',
+    example: "Includes wireless charger",
     required: false,
   })
   @IsOptional()
@@ -226,9 +226,9 @@ export class CreateProductDto {
   additionally?: string;
 
   @ApiProperty({
-    description: 'Number of likes the product has',
+    description: "Number of likes the product has",
     type: String,
-    example: '500',
+    example: "500",
     required: false,
   })
   @IsOptional()
@@ -236,9 +236,9 @@ export class CreateProductDto {
   likes?: number;
 
   @ApiProperty({
-    description: 'List of image URLs for the product',
+    description: "List of image URLs for the product",
     type: [String],
-    example: ['http://example.com/image1.jpg'],
+    example: ["http://example.com/image1.jpg"],
   })
   @IsOptional()
   @IsArray()
@@ -246,9 +246,9 @@ export class CreateProductDto {
   images: string[];
 
   @ApiProperty({
-    description: 'Type/category of the product',
+    description: "Type/category of the product",
     type: String,
-    example: 'Smartphone',
+    example: "Smartphone",
   })
   @IsNotEmpty()
   @IsString()

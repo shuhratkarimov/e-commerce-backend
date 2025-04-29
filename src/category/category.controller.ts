@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  Delete,
+  UseGuards,
+} from "@nestjs/common";
 import { CategoryService } from "./category.service";
 import { AuthGuard } from "../auth/auth.guard";
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from "@nestjs/swagger";
@@ -41,10 +50,7 @@ export class CategoryController {
   @UseGuards(AuthGuard)
   @Put("update_category/:id")
   @ApiBody({ type: UpdateCategoryDto })
-  async update(
-    @Param("id") id: string,
-    @Body() updateData: UpdateCategoryDto
-  ) {
+  async update(@Param("id") id: string, @Body() updateData: UpdateCategoryDto) {
     return this.categoryService.update(id, updateData);
   }
 

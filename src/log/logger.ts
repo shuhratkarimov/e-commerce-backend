@@ -1,4 +1,4 @@
-import { LoggerService, Injectable } from '@nestjs/common';
+import { LoggerService, Injectable } from "@nestjs/common";
 
 @Injectable()
 export class CustomLogger implements LoggerService {

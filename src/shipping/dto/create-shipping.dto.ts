@@ -1,47 +1,47 @@
-import { IsNotEmpty, IsString } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString } from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateShippingDto {
   @ApiProperty({
-    description: 'User ID for the shipping',
+    description: "User ID for the shipping",
     type: String,
-    example: '12345',
+    example: "12345",
   })
   @IsNotEmpty()
   @IsString()
   userId: string;
 
   @ApiProperty({
-    description: 'Shipping address',
+    description: "Shipping address",
     type: String,
-    example: '123 Main St, Apt 4B',
+    example: "123 Main St, Apt 4B",
   })
   @IsNotEmpty()
   @IsString()
   address: string;
 
   @ApiProperty({
-    description: 'City of the shipping address',
+    description: "City of the shipping address",
     type: String,
-    example: 'New York',
+    example: "New York",
     required: false,
   })
   @IsString()
   city?: string;
 
   @ApiProperty({
-    description: 'Postal code of the shipping address',
+    description: "Postal code of the shipping address",
     type: String,
-    example: '10001',
+    example: "10001",
     required: false,
   })
   @IsString()
   postalCode?: string;
 
   @ApiProperty({
-    description: 'Country of the shipping address',
+    description: "Country of the shipping address",
     type: String,
-    example: 'USA',
+    example: "USA",
     required: false,
   })
   @IsString()

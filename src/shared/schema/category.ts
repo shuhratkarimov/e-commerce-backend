@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document } from "mongoose";
 
-export type CategoryDocument = Category & Document
+export type CategoryDocument = Category & Document;
 
 @Schema({ timestamps: true, versionKey: false })
 export class Category extends Document {
@@ -12,4 +12,4 @@ export class Category extends Document {
   image: string;
 }
 
-export const CategorySchema = SchemaFactory.createForClass(Category)
+export const CategorySchema = SchemaFactory.createForClass(Category);

@@ -7,9 +7,11 @@ export class CreateCategoryDto {
   @IsString()
   title: string;
 
-  @ApiProperty({ example: "https://example.com", description: "Image URL for the category" })
+  @ApiProperty({
+    example: "https://example.com",
+    description: "Image URL for the category",
+  })
   @IsNotEmpty()
   @IsString()
   image: string;
 }
-

@@ -16,7 +16,13 @@ export class ClickService {
 
     const sign = crypto
       .createHash("md5")
-      .update(merchant_id + service_id + secret_key + transaction_param + amount_param)
+      .update(
+        merchant_id +
+          service_id +
+          secret_key +
+          transaction_param +
+          amount_param,
+      )
       .digest("hex");
 
     return `https://my.click.uz/pay?merchant_id=${merchant_id}&service_id=${service_id}&transaction_param=${transaction_param}&amount=${amount_param}&sign_time=${Date.now()}&sign_string=${sign}`;
@@ -33,7 +39,7 @@ export class ClickService {
           data.merchant_trans_id +
           data.amount +
           data.action +
-          data.sign_time
+          data.sign_time,
       )
       .digest("hex");
 

@@ -6,79 +6,79 @@ export type ProductDocument = Product & Document;
 @Schema({ timestamps: true, versionKey: false })
 export class Product extends Document {
   @Prop({ required: false })
-  name: String;
+  name: string;
 
   @Prop({ required: true })
-  brand: String;
+  brand: string;
 
   @Prop({ required: false })
-  price: Number;
+  price: number;
 
   @Prop({ required: false })
-  colors: [String];
+  colors: [string];
 
   @Prop({ required: false })
-  rom: Number;
+  rom: number;
 
   @Prop({ required: false })
-  screenSize: Number;
+  screenSize: number;
 
   @Prop({ required: false })
-  cpu: String;
+  cpu: string;
 
   @Prop({ required: false })
-  cores: Number;
+  cores: number;
 
   @Prop({ required: false })
-  mainCamera: String;
+  mainCamera: string;
 
   @Prop({ required: false })
-  frontCamera: Number;
+  frontCamera: number;
 
   @Prop({ required: false })
-  batteryCapacity: Number;
+  batteryCapacity: number;
 
   @Prop({ required: false })
-  description: String;
+  description: string;
 
   @Prop({ required: false })
-  freeDelivery: Number;
+  freeDelivery: number;
 
   @Prop({ required: false })
-  inStock: Number;
+  inStock: number;
 
   @Prop({ required: false })
-  guaranteed: Number;
+  guaranteed: number;
 
   @Prop({ required: false })
-  details: String;
+  details: string;
 
   @Prop({ required: false })
-  screenResolution: [Number];
+  screenResolution: [number];
 
   @Prop({ required: false })
-  screenRefreshRate: Number;
+  screenRefreshRate: number;
 
   @Prop({ required: false })
-  pixelDensity: Number;
+  pixelDensity: number;
 
   @Prop({ required: false })
-  screenType: String;
+  screenType: string;
 
   @Prop({ required: false })
-  protectionClass: Number;
+  protectionClass: number;
 
   @Prop({ required: false })
-  additionally: String;
+  additionally: string;
 
   @Prop({ required: false, default: 0 })
-  likes: Number;
+  likes: number;
 
   @Prop({ required: false })
-  images: [String];
+  images: [string];
 
   @Prop({ required: true })
-  type: String
+  type: string;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);
