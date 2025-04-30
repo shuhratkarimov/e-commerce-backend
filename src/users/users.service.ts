@@ -175,13 +175,16 @@ export class UsersService {
       if (foundUser.isVerified) {
         res.cookie("accesstoken", accesstoken, {
           httpOnly: true,
+          secure: true, // 🔒 faqat HTTPS da yuboriladi
+          sameSite: "strict", // yoki "lax", kontekstga qarab
           maxAge: 15 * 60 * 1000,
         });
         res.cookie("refreshtoken", refreshtoken, {
           httpOnly: true,
-          maxAge: 7 * 24 * 60 * 60 * 1000,
+          secure: true, // 🔒 faqat HTTPS da yuboriladi
+          sameSite: "strict", // yoki "lax", kontekstga qarab
+          maxAge: 15 * 60 * 1000,
         });
-        console.log(refreshtoken);
 
         return res.json({
           message: "You successfully logged in!",

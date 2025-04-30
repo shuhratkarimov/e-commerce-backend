@@ -8,6 +8,7 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { CustomLogger } from "./log/logger";
 import { ValidationPipe } from "@nestjs/common";
 import { NestExpressApplication } from "@nestjs/platform-express";
+import helmet from "helmet";
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -20,7 +21,7 @@ async function bootstrap() {
     })
   );
   app.use(cookieParser());
-
+  app.use(helmet());
   app.useGlobalFilters(new AllExceptionFilter());
 
   app.useLogger(app.get(CustomLogger));
