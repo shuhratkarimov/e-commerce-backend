@@ -71,7 +71,7 @@ export class UploadController {
       throw new BadRequestException("Fayl yuklanmadi");
     }
 
-    const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${file.filename}`;
+    const fileUrl = `https://${req.get("host")}/uploads/${file.filename}`;
     return {
       success: true,
       message: "Fayl muvaffaqiyatli yuklandi",
@@ -101,7 +101,7 @@ export class UploadController {
       throw new BadRequestException("Hech qanday fayl yuklanmadi");
     }
 
-    const baseUrl = `${req.protocol}://${req.get("host")}`;
+    const baseUrl = `https://${req.get("host")}`;
     const uploadedFiles = files.map((file) => ({
       originalName: file.originalname,
       fileName: file.filename,
