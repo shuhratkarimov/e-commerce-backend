@@ -9,20 +9,34 @@ import { CustomLogger } from "./log/logger";
 import { ValidationPipe } from "@nestjs/common";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import helmet from "helmet";
+import express from "express";
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const PORT = process.env.PORT || 3000;
 
+  // Umumiy CORS sozlamalari (API so‘rovlar uchun)
   app.use(
     cors({
       origin: [
-        "https://shuhratkarimov.uz"
+        "https://shuhratkarimov.uz",
+        "http://localhost:3000",
       ],
       credentials: true,
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization"],
     })
+  );
+
+  // uploads papkasi uchun alohida CORS sozlamalari
+  app.use(
+    "/uploads",
+    cors({
+      origin: "https://shuhratkarimov.uz", // Faqat bu domendan so‘rovlarga ruxsat
+      methods: ["GET", "OPTIONS"],
+      allowedHeaders: ["Content-Type"],
+    }),
+    express.static(join(process.cwd(), "uploads"))
   );
 
   app.use(cookieParser());
@@ -31,7 +45,7 @@ async function bootstrap() {
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
-          imgSrc: ["'self'", "https://cpanel.shuhratkarimov.uz"], // Rasm manbalariga ruxsat berish
+          imgSrc: ["'self'", "https://cpanel.shuhratkarimov.uz", "https://shuhratkarimov.uz"],
         },
       },
     })
@@ -56,11 +70,6 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("api-docs", app, document);
-
-  app.useStaticAssets(join(process.cwd(), "uploads"), {
-    prefix: "/uploads/",
-    index: false,
-  });
 
   try {
     await app.listen(PORT, () => {
