@@ -16,12 +16,26 @@ async function bootstrap() {
 
   app.use(
     cors({
-      origin: "https://shuhratkarimov.uz",
+      origin: [
+        "https://shuhratkarimov.uz"
+      ],
       credentials: true,
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization"],
     })
   );
+
   app.use(cookieParser());
-  app.use(helmet());
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          imgSrc: ["'self'", "https://cpanel.shuhratkarimov.uz"], // Rasm manbalariga ruxsat berish
+        },
+      },
+    })
+  );
   app.useGlobalFilters(new AllExceptionFilter());
 
   app.useLogger(app.get(CustomLogger));
