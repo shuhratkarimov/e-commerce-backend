@@ -1,24 +1,36 @@
-import { LoggerService, Injectable } from "@nestjs/common";
+// log/logger.ts
+import { Injectable, LoggerService } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
 
 @Injectable()
 export class CustomLogger implements LoggerService {
-  log(message: string) {
+  constructor(
+    @InjectModel('LogEntry') private readonly logModel: Model<any>,
+  ) {}  
+
+  async log(message: string) {
     console.log(`Custom log: ${message}`);
+    await this.logModel.create({ level: 'log', message });
   }
 
-  error(message: string, trace: string) {
-    console.error(`Custom error: ${message}\nTrace: ${trace}`);
+  async error(message: string, trace: string | Error) {
+    console.error(`Custom error: ${message}\nTrace: ${trace || 'No stack trace'}`);
+    await this.logModel.create({ level: 'error', message, trace });
   }
 
-  warn(message: string) {
+  async warn(message: string) {
     console.warn(`Custom warn: ${message}`);
+    await this.logModel.create({ level: 'warn', message });
   }
 
-  debug(message: string) {
+  async debug(message: string) {
     console.debug(`Custom debug: ${message}`);
+    await this.logModel.create({ level: 'debug', message });
   }
 
-  verbose(message: string) {
+  async verbose(message: string) {
     console.log(`Custom verbose: ${message}`);
+    await this.logModel.create({ level: 'verbose', message });
   }
 }

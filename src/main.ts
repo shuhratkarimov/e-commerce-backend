@@ -19,12 +19,12 @@ async function bootstrap() {
   app.use(
     cors({
       origin: [
-        "https://shuhratkarimov.uz",
+        "https://shuhratkarimov.uz", // Faqat bu domenlardan so‘rovlarga ruxsat
         "http://localhost:3000",
       ],
-      credentials: true,
+      credentials: true, // Cookie va boshqa ma'lumotlarni yuborishga ruxsat
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-      allowedHeaders: ["Content-Type", "Authorization", "token"], // token header’ini qo‘shish
+      allowedHeaders: ["Content-Type", "Authorization", "token"], // kerakli header’lar
     })
   );
 
@@ -32,36 +32,42 @@ async function bootstrap() {
   app.use(
     "/uploads",
     cors({
-      origin: "https://shuhratkarimov.uz", // Faqat bu domendan so‘rovlarga ruxsat
-      methods: ["GET", "OPTIONS"],
-      allowedHeaders: ["Content-Type"],
+      origin: [
+        "https://shuhratkarimov.uz", // Faqat bu domenlardan so‘rovlarga ruxsat
+        "http://localhost:3000",
+      ],
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization", "token"],
     }),
-    express.static(join(process.cwd(), "uploads"))
+    express.static(join(process.cwd(), "uploads")) // uploads papkasidagi fayllarni ko'rsatish
   );
 
   app.use(cookieParser());
+
   app.use(
     helmet({
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
-          imgSrc: ["'self'", "https://cpanel.shuhratkarimov.uz", "https://shuhratkarimov.uz"],
+          imgSrc: ["'self'", "https://cpanel.shuhratkarimov.uz", "https://shuhratkarimov.uz"], // rasm URL’lariga ruxsat
         },
       },
     })
   );
+
   app.useGlobalFilters(new AllExceptionFilter());
 
   app.useLogger(app.get(CustomLogger));
 
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,
+      whitelist: true, // faqat kerakli ma'lumotlar
       forbidNonWhitelisted: true,
-      transform: true,
+      transform: true, // avtomatik tip konversiyasi
     })
   );
 
+  // Swagger konfiguratsiyasi
   const config = new DocumentBuilder()
     .setTitle("E-commerce website API")
     .setDescription("E-commerce website of electronical products")
