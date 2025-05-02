@@ -19,8 +19,8 @@ import { UploadModule } from "./upload/upload.module";
 import { LogModule } from "./log/log.module";
 import { RequestLoggingMiddleware } from "./log/request.logger.middleware";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
-import { CustomThrottlerGuard } from "./guards/rate-limiter.guard";
 import { RateLimitModule } from "./rate-limit/rate-limit.module";
+import { UploadController } from "./upload/upload.controller";
 
 @Module({
   imports: [
@@ -34,15 +34,15 @@ import { RateLimitModule } from "./rate-limit/rate-limit.module";
     CommentModule,
     ClickModule,
     ShippingModule,
+    UploadModule,
+    LogModule,
+    RateLimitModule,
     ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), "uploads"),
       serveRoot: "/uploads",
-    }),
-    UploadModule,
-    LogModule,
-    RateLimitModule
+    })
   ],
-  controllers: [],
+  controllers: [UploadController],
   providers: [
     CustomLogger,
     {

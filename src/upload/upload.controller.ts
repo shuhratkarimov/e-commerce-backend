@@ -1,119 +1,115 @@
+// src/upload/upload.controller.ts
 import {
   Controller,
   Post,
-  UploadedFile,
   UseInterceptors,
-  Req,
+  UploadedFile,
   UploadedFiles,
   BadRequestException,
-} from "@nestjs/common";
-import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
-import { diskStorage } from "multer";
-import { extname, join } from "path";
-import { Request } from "express";
-import { existsSync, mkdirSync } from "fs";
+  Req,
+} from '@nestjs/common';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
+import { extname } from 'path';
+import { Request } from 'express';
+import { UploadService } from './upload.service';
 
-@Controller("upload")
+
+@Controller('upload')
 export class UploadController {
-  private readonly uploadDir = join(process.cwd(), "uploads");
-
-  constructor() {
-    this.createUploadFolder();
+  constructor(private readonly supabase: UploadService) {}
+  private generateUniqueFileName(originalName: string): string {
+    const ext = extname(originalName);
+    return `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
   }
 
-  private createUploadFolder() {
-    if (!existsSync(this.uploadDir)) {
-      mkdirSync(this.uploadDir, { recursive: true });
-    }
-  }
-
-  // Statik konfiguratsiya obyektini tashqariga chiqaramiz
-  private static getStorageOptions(uploadDir: string) {
-    return {
-      storage: diskStorage({
-        destination: (req, file, cb) => {
-          cb(null, uploadDir);
-        },
-        filename: (req, file, cb) => {
-          const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-          const ext = extname(file.originalname);
-          cb(null, `${file.fieldname}-${uniqueName}${ext}`);
-        },
-      }),
-      limits: {
-        fileSize: 5 * 1024 * 1024, // 5MB
-      },
-      fileFilter: (req, file, cb) => {
-        const allowedTypes = /\.(jpg|jpeg|png|gif|pdf)$/i;
-        if (!file.originalname.match(allowedTypes)) {
-          return cb(
-            new BadRequestException("Faqat rasm va PDF fayllar ruxsat etilgan"),
-            false,
-          );
-        }
-        cb(null, true);
-      },
-    };
-  }
-
-  @Post("single")
+  @Post('single')
   @UseInterceptors(
-    FileInterceptor(
-      "file",
-      UploadController.getStorageOptions(join(process.cwd(), "uploads")),
-    ),
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+      limits: { fileSize: 5 * 1024 * 1024 },
+    }),
   )
-  uploadSingleFile(
+  async uploadSingleFile(
     @UploadedFile() file: Express.Multer.File,
     @Req() req: Request,
   ) {
-    if (!file) {
-      throw new BadRequestException("Fayl yuklanmadi");
+    if (!file) throw new BadRequestException('Fayl topilmadi');
+
+    const fileName = this.generateUniqueFileName(file.originalname);
+
+    const { error } = await this.supabase.client.storage
+      .from('images')
+      .upload(fileName, file.buffer, {
+        contentType: file.mimetype,
+      });
+
+    if (error) {
+      throw new BadRequestException('Yuklashda xatolik: ' + error.message);
     }
 
-    const fileUrl = `https://${req.get("host")}/uploads/${file.filename}`;
+    const { data: publicUrl } = this.supabase.client.storage
+      .from('images')
+      .getPublicUrl(fileName);
+
     return {
       success: true,
-      message: "Fayl muvaffaqiyatli yuklandi",
+      message: 'Fayl yuklandi',
       data: {
         originalName: file.originalname,
-        fileName: file.filename,
-        size: file.size,
-        mimeType: file.mimetype,
-        url: fileUrl,
+        fileName,
+        url: publicUrl,
       },
     };
   }
 
-  @Post("multiple")
+  @Post('multiple')
   @UseInterceptors(
-    FilesInterceptor(
-      "files",
-      10,
-      UploadController.getStorageOptions(join(process.cwd(), "uploads")),
-    ),
+    FilesInterceptor('files', 10, {
+      storage: memoryStorage(),
+      limits: { fileSize: 5 * 1024 * 1024 },
+    }),
   )
-  uploadMultipleFiles(
+  async uploadMultipleFiles(
     @UploadedFiles() files: Express.Multer.File[],
     @Req() req: Request,
   ) {
     if (!files || files.length === 0) {
-      throw new BadRequestException("Hech qanday fayl yuklanmadi");
+      throw new BadRequestException('Fayllar topilmadi');
     }
 
-    const baseUrl = `https://${req.get("host")}`;
-    const uploadedFiles = files.map((file) => ({
-      originalName: file.originalname,
-      fileName: file.filename,
-      size: file.size,
-      mimeType: file.mimetype,
-      url: `${baseUrl}/uploads/${file.filename}`,
-    }));
+    const uploaded = [];
+
+    for (const file of files) {
+      const fileName = this.generateUniqueFileName(file.originalname);
+
+      const { error } = await this.supabase.client.storage
+        .from('images')
+        .upload(fileName, file.buffer, {
+          contentType: file.mimetype,
+        });
+
+      if (error) {
+        throw new BadRequestException(
+          `Fayl yuklashda xatolik (${file.originalname}): ${error.message}`,
+        );
+      }
+
+      const { data: publicUrl } = this.supabase.client.storage
+        .from('images')
+        .getPublicUrl(fileName);
+
+      uploaded.push({
+        originalName: file.originalname,
+        fileName,
+        url: publicUrl,
+      });
+    }
 
     return {
       success: true,
-      message: `${files.length} ta fayl muvaffaqiyatli yuklandi`,
-      data: uploadedFiles,
+      message: `${uploaded.length} ta fayl yuklandi`,
+      data: uploaded,
     };
   }
 }

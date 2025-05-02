@@ -1,9 +1,11 @@
-import { Module } from "@nestjs/common";
-import { UploadService } from "./upload.service";
-import { UploadController } from "./upload.controller";
+// src/supabase/supabase.module.ts
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { UploadService } from './upload.service';
 
 @Module({
-  controllers: [UploadController],
+  imports: [ConfigModule],
   providers: [UploadService],
+  exports: [UploadService],
 })
 export class UploadModule {}
