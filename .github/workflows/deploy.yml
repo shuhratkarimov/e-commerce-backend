@@ -29,8 +29,8 @@ jobs:
           echo "REDIS_USERNAME=${{ secrets.REDIS_USERNAME }}" >> .env
           echo "MY_USERNAME=${{ secrets.MY_USERNAME }}" >> .env
           echo "MY_PASSWORD=${{ secrets.MY_PASSWORD }}" >> .env
-          echo "MY_PASSWORD=${{ secrets.SUPABASE_URL }}" >> .env
-          echo "MY_PASSWORD=${{ secrets.SUPABASE_ANON_KEY }}" >> .env
+          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> .env
+          echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env
 
       - name: QEMU o‘rnatish
         uses: docker/setup-qemu-action@v3
